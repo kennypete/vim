@@ -17,6 +17,12 @@ g:helptoc.shell_prompt = get(g:helptoc, 'shell_prompt', '^\w\+@\w\+:\f\+\$\s')
 # Track the prior prompt (used to reset b:toc if 'shell_prompt' changes)
 g:helptoc.prior_shell_prompt = g:helptoc.shell_prompt
 
+# Indent levels (spaces) for Python and Rust
+g:helptoc.javascript_indent = get(g:helptoc, 'javascript_indent', 4)
+g:helptoc.python_indent = get(g:helptoc, 'python_indent', 4)
+g:helptoc.rust_indent = get(g:helptoc, 'rust_indent', 4)
+g:helptoc.typescript_indent = get(g:helptoc, 'typescript_indent', 4)
+
 def UpdateUserSettings() #{{{2
 
     if g:helptoc.shell_prompt != g:helptoc.prior_shell_prompt
@@ -145,6 +151,12 @@ const MATCH_ENTRY: dict<dict<func: bool>> = {
         6: (l: string, _): bool => l =~ '\v^%(\={6}|#{6})\s',
     },
 
+    go: {
+        1: (l: string, _): bool => l =~ '\v^%(package|import|func|type|' ..
+            'var|const)\s',
+        2: (l: string, _): bool => l =~ '\v^\t%(func|type|var|const)\s',
+    },
+
     html: {
         1: (l: string, _): bool => l =~ $"{UPTOINC_H}1",
         2: (l: string, _): bool => l =~ $"{UPTOINC_H}2",
@@ -152,6 +164,15 @@ const MATCH_ENTRY: dict<dict<func: bool>> = {
         4: (l: string, _): bool => l =~ $"{UPTOINC_H}4",
         5: (l: string, _): bool => l =~ $"{UPTOINC_H}5",
         6: (l: string, _): bool => l =~ $"{UPTOINC_H}6",
+    },
+
+    javascript: {
+        1: (l: string, _): bool => l =~ '\v^%(import|export|function|' ..
+            'async\s+function|class|const|let|var)\s',
+        2: (l: string, _): bool => l =~ (g:helptoc.javascript_indent == 4 ?
+            '\v^[\x20]{4}' : (g:helptoc.javascript_indent == 2 ?
+            '\v^[\x20]{2}' : '\v^\t')) ..
+            '%(function|async\s+function|class|const|let|var)\s',
     },
 
     man: {
@@ -176,6 +197,26 @@ const MATCH_ENTRY: dict<dict<func: bool>> = {
         6: (l: string, _): bool => l =~ '\v {0,3}#{6}%(\s|$)',
     },
 
+    python: {
+        1: (l: string, _): bool => l =~ '\v^%(def|class|import|from|' ..
+            'global|nonlocal|async\s+def)\s',
+        2: (l: string, _): bool => l =~ (g:helptoc.python_indent == 4 ?
+            '\v^%([\x20]{4})' : (g:helptoc.python_indent == 2 ?
+            '\v^%([\x20]{2})' : '\v^\t')) ..
+            '%(def|class|import|from|global|nonlocal|async\s+def)\s',
+    },
+
+    rust: {
+        1: (l: string, _): bool => l =~ '\v^%(pub%(\([^)]*\))?\s+)?' ..
+            '%(mod|fn|struct|impl|macro[_!a-z]*|static|use|enum|union|' ..
+            'trait|type|const|extern)\s',
+        2: (l: string, _): bool => l =~ (g:helptoc.rust_indent == 4 ?
+            '\v^%([\x20]{4})' : (g:helptoc.rust_indent == 2 ?
+            '\v^%([\x20]{2})' : '\v^\t')) ..
+            '%(pub%(\([^)]*\))?\s+)?' ..  '%(mod|fn|struct|impl|' ..
+            'macro[_!a-z]*|static|use|enum|union|trait|type|const|extern)\s',
+    },
+
     terminal: {
         1: (l: string, _): bool => l =~ g:helptoc.shell_prompt
     },
@@ -198,6 +239,17 @@ const MATCH_ENTRY: dict<dict<func: bool>> = {
             '\%([\u005B{]\)\|addcontentsline{toc}{subsection}\)',
         4: (l: string, _): bool => l =~ '^[\\]\%(subsubsection' ..
             '\%([\u005B{]\)\|addcontentsline{toc}{subsubsection}\)',
+    },
+
+    typescript: {
+        1: (l: string, _): bool => l =~ '\v^%(import|export|function|' ..
+            'async\s+function|class|interface|type|enum|const|let|var|' ..
+            'declare|namespace|module)\s',
+        2: (l: string, _): bool => l =~ (g:helptoc.typescript_indent == 4 ?
+            '\v^[\x20]{4}' : (g:helptoc.typescript_indent == 2 ?
+            '\v^[\x20]{2}' : '\v^\t')) ..
+            '%(function|async\s+function|class|interface|type|enum|' ..
+            'const|let|var|declare)\s',
     },
 
     vim: {
