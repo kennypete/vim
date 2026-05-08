@@ -609,6 +609,7 @@ screen_line(
     int		    drawing_opacity_popup =
 				screen_opacity_popup != NULL
 				&& (flags & SLF_POPUP);
+    CLEAR_FIELD(po);
     if (drawing_opacity_popup)
 	popup_opacity_init(&po);
 #endif
