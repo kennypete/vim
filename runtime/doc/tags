@@ -9791,6 +9791,7 @@ popt-option	print.txt	/*popt-option*
 popup	popup.txt	/*popup*
 popup-buffer	popup.txt	/*popup-buffer*
 popup-callback	popup.txt	/*popup-callback*
+popup-clipwindow	popup.txt	/*popup-clipwindow*
 popup-close	popup.txt	/*popup-close*
 popup-examples	popup.txt	/*popup-examples*
 popup-filter	popup.txt	/*popup-filter*
