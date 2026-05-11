@@ -1,4 +1,4 @@
-*usr_20.txt*	For Vim version 9.2.  Last change: 2026 Feb 14
+*usr_20.txt*	For Vim version 9.2.  Last change: 2026 May 11
 
 
 		     VIM USER MANUAL	by Bram Moolenaar
@@ -116,9 +116,17 @@ command.  It's like deleting the ":" or "/" that the line starts with.
 *20.2*	Command line abbreviations
 
 Some of the ":" commands are really long.  We already mentioned that
-":substitute" can be abbreviated to ":s".  This is a generic mechanism, all
-":" commands can be abbreviated.
+":substitute" can be abbreviated to ":s".  This is a generic mechanism, with
+most ":" commands able to be abbreviated, though some are already as short as
+they can be.  Also, in Vim9 script, flow control and some Vim9 script commands
+cannot be shortened - see |vim9-no-shorten|.
 
+The builtin function |fullcommand()| can be used to return an abbreviated
+command's full command.  For example, these commands echo "echo" and "edit":
+>vim
+	:echo fullcommand('ec')
+	:echo fullcommand('e')
+<
 How short can a command get?  There are 26 letters, and many more commands.
 For example, ":set" also starts with ":s", but ":s" doesn't start a ":set"
 command.  Instead ":set" can be abbreviated to ":se".

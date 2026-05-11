@@ -42,7 +42,8 @@ def Test_class_basic()
   END
   v9.CheckSourceFailure(lines, 'E475: Invalid argument: classy Something', 2)
 
-  # The complete "endclass" should be specified.
+  # "endclass" cannot be shortened - see Test_shortened_invalid_vim9() in
+  # test_vim9_script.vim for complete coverage (:endc to :endclas)
   lines =<< trim END
     vim9script
     class Something
@@ -1359,7 +1360,8 @@ def Test_instance_variable_access()
   END
   v9.CheckSourceSuccess(lines)
 
-  # Test for "public" cannot be abbreviated
+  # "public" cannot be shortened - see Test_shortened_invalid_vim9() in
+  # test_vim9_script.vim for complete coverage (:pub to :publi)
   lines =<< trim END
     vim9script
     class Something
@@ -1452,7 +1454,9 @@ enddef
 
 " Test for class variable access
 def Test_class_variable_access()
-  # Test for "static" cannot be abbreviated
+
+  # "static" cannot be shortened - see Test_shortened_invalid_vim9() in
+  # test_vim9_script.vim for complete coverage (:stat and :stati)
   var lines =<< trim END
     vim9script
     class Something
@@ -2943,7 +2947,8 @@ def Test_abstract_class()
   END
   v9.CheckSourceFailure(lines, 'E1316: Class can only be defined in Vim9 script', 1)
 
-  # Test for "abstract" cannot be abbreviated
+  # "abstract" cannot be shortened - see Test_shortened_invalid_vim9() in
+  # test_vim9_script.vim for complete coverage (:abs to :abstrac)
   lines =<< trim END
     vim9script
     abs class A
@@ -5572,7 +5577,8 @@ def Test_abstract_method()
   END
   v9.CheckSourceFailure(lines, 'E1404: Abstract cannot be used in an interface', 3)
 
-  # Abbreviate the "abstract" keyword
+  # "abstract" cannot be shortened - see Test_shortened_invalid_vim9() in
+  # test_vim9_script.vim for complete coverage (:abs to :abstrac)
   lines =<< trim END
     vim9script
     class A
@@ -11868,5 +11874,148 @@ func Test_class_member_lambda()
   END
   call v9.CheckSourceSuccess(lines)
 endfunc
+
+def Test_enum_basic()
+  # "enum" supported only in "vim9script"
+  var lines: list<string> =<< trim END
+    enum EnumLegacy
+    endenum
+  END
+  v9.CheckSourceFailure(lines, 'E1414: Enum can only be defined in Vim9 script', 1)
+
+  # Only alphanumeric characters are supported in an enum name
+  lines =<< trim END
+    vim9script
+    enum Enum@fails
+    endenum
+  END
+  v9.CheckSourceFailure(lines, 'E1315: White space required after name: Enum@fails', 2)
+
+  # First character in an enum must be capitalized
+  lines =<< trim END
+    vim9script
+    enum lowercase
+    endenum
+  END
+  v9.CheckSourceFailure(lines, 'E1415: Enum name must start with an uppercase letter: lowercase', 2)
+
+  # "enum" cannot be shortened
+  lines =<< trim END
+    vim9script
+    enu NoAbbrev
+    endenum
+  END
+  v9.CheckSourceFailure(lines, 'E1065: Command cannot be shortened: enu NoAbbrev', 2)
+
+  # "endenum" cannot be shortened - see Test_shortened_invalid_vim9() in
+  # test_vim9_script.vim for complete coverage (:ende to :endenu)
+  lines =<< trim END
+    vim9script
+    enum NoAbbrev
+    ende
+  END
+  v9.CheckSourceFailure(lines, 'E1065: Command cannot be shortened: ende', 3)
+
+  # Additional words after "endenum"
+  lines =<< trim END
+    vim9script
+    enum NoTrailingChars
+    endenum nah
+  END
+  v9.CheckSourceFailure(lines, "E488: Trailing characters: nah", 3)
+
+  # Additional command after "endenum"
+  lines =<< trim END
+    vim9script
+    enum NoTrailingCmd
+    endenum | echo 'no'
+  END
+  v9.CheckSourceFailure(lines, "E488: Trailing characters: | echo 'no'", 3)
+
+  # Additional command after "enum Name"
+  lines =<< trim END
+    vim9script
+    enum NoAdditionalCmd | var x = 10
+    endenum
+  END
+  v9.CheckSourceFailure(lines, "E488: Trailing characters: | var x = 10", 2)
+
+  # Additional command after "enumvalue"
+  lines =<< trim END
+    vim9script
+    enum NoAdditionalCmd
+      One, | var y = 10
+      Two
+    endenum
+  END
+  v9.CheckSourceFailure(lines, "E1418: Invalid enum value declaration: | var y = 10", 3)
+enddef
+
+def Test_interface_basic()
+  # "interface" supported only in "vim9script"
+  var lines: list<string> =<< trim END
+    interface InterfaceLegacy
+    endinterface
+  END
+  v9.CheckSourceFailure(lines, 'E1342: Interface can only be defined in Vim9 script', 1)
+
+  # Only alphanumeric characters are supported in an interface name
+  lines =<< trim END
+    vim9script
+    interface Interface@fails
+    endinterface
+  END
+  v9.CheckSourceFailure(lines, 'E1315: White space required after name: Interface@fails', 2)
+
+  # First character in an interface must be capitalized
+  lines =<< trim END
+    vim9script
+    interface lowercase
+    endinterface
+  END
+  v9.CheckSourceFailure(lines, 'E1343: Interface name must start with an uppercase letter: lowercase', 2)
+
+  # "interface" cannot be shortened - see Test_shortened_invalid_vim9() in
+  # test_vim9_script.vim for complete coverage (:inte to :interfac)
+  lines =<< trim END
+    vim9script
+    inte Short
+    endinterface
+  END
+  v9.CheckSourceFailure(lines, 'E1065: Command cannot be shortened: inte Short', 2)
+
+  # "endinterface" cannot be shortened - see Test_shortened_invalid_vim9() in
+  # test_vim9_script.vim for complete coverage (:endin to :endinterfac)
+  lines =<< trim END
+    vim9script
+    interface Short
+    endin
+  END
+  v9.CheckSourceFailure(lines, 'E1065: Command cannot be shortened: endin', 3)
+
+  # Additional words after "endinterface"
+  lines =<< trim END
+    vim9script
+    interface NoTrailingChars
+    endinterface nah
+  END
+  v9.CheckSourceFailure(lines, "E488: Trailing characters: nah", 3)
+
+  # Additional command after "endinterface"
+  lines =<< trim END
+    vim9script
+    interface NoTrailingCmd
+    endinterface | echo 'no'
+  END
+  v9.CheckSourceFailure(lines, "E488: Trailing characters: | echo 'no'", 3)
+
+  # Additional command after "interface Name"
+  lines =<< trim END
+    vim9script
+    interface NoAdditionalCmd | var x = 10
+    endinterface
+  END
+  v9.CheckSourceFailure(lines, "E488: Trailing characters: | var x = 10", 2)
+enddef
 
 " vim: ts=8 sw=2 sts=2 expandtab tw=80 fdm=marker

@@ -7702,6 +7702,33 @@ func Test_function_long_generic_name()
   delfunc TestFunc
 endfunc
 
+" Test using fullcommand() {{{1
+func Test_builtin_fullcommand()
+  " :hor is the minimum abbreviation of :horizontal; :ho is not valid
+  call assert_equal('', fullcommand('ho', v:false))
+  call assert_equal('horizontal', fullcommand('hor', v:false))
+  " :k may take at most one mark character argument, with optional whitespace
+  call assert_equal('k', fullcommand('k', v:false))
+  call assert_equal('k', fullcommand('kz', v:false))
+  call assert_equal('k', fullcommand('k z', v:false))
+  call assert_equal('', fullcommand('kzz', v:false))
+  call assert_equal('', fullcommand('kz7', v:false))
+  " :dl is delete-list in legacy Vim script (but dlist in Vim9 script)
+  call assert_equal('delete', fullcommand('dl', v:false))
+  " :s two and three letter commands
+  call assert_equal('substitute', fullcommand('sc', v:false))
+  call assert_equal('substitute', fullcommand('sce', v:false))
+  " TODO sc[egiIlnp].\+, sg[ceiIlnpr.\+, si[ceInpr].\+, sI[ceginplr].\+ and
+  " sr[cgiInplr].\+ needs fixing in ex_docmds.c (i.e., all should return '')
+  call assert_equal('substitute', fullcommand('sceeeeeeeeeeeeeeeee', v:false))
+  " :finally
+  call assert_equal('finally', fullcommand('finall', v:false))
+  " TODO: 'final' returns 'final' which is a Vim9 script-only keyword.
+  " It should return 'finally', so when that's fixed, adjust this accordingly:
+  call assert_equal('final', fullcommand('final', v:false))
+  call assert_equal('finally', fullcommand('fina', v:false))
+endfunc
+
 "-------------------------------------------------------------------------------
 " Modelines								    {{{1
 " vim: ts=8 sw=2 sts=2 expandtab tw=80 fdm=marker
